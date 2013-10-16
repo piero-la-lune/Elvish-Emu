@@ -21,6 +21,36 @@
 			}
 		}
 	}
+	if (isset($_POST['action']) && $_POST['action'] == 'add_user') {
+		$settings = new Settings();
+		$ans = $settings->changes_user_add($_POST);
+		if ($ans !== true) {
+			$this->addAlert($ans);
+		}
+		else {
+			$this->addAlert(Trad::A_SUCCESS_USER_ADD, 'alert-success');
+		}
+	}
+	if (isset($_POST['action']) && $_POST['action'] == 'rm_user') {
+		$settings = new Settings();
+		$ans = $settings->changes_user_rm($_POST);
+		if ($ans !== true) {
+			$this->addAlert($ans);
+		}
+		else {
+			$this->addAlert(Trad::A_SUCCESS_USER_RM, 'alert-success');
+		}
+	}
+	if (isset($_POST['action']) && $_POST['action'] == 'edit_user') {
+		$settings = new Settings();
+		$ans = $settings->changes_user_edit($_POST);
+		if ($ans !== true) {
+			$this->addAlert($ans);
+		}
+		else {
+			$this->addAlert(Trad::A_SUCCESS_USER_EDIT, 'alert-success');
+		}
+	}
 
 	$title = Trad::T_SETTINGS;
 
@@ -29,11 +59,37 @@
 		$languages[$v] = $v;
 	}
 
+	$users = '';
+	foreach ($config['users'] as $k => $user) {
+		$users .= '
+<h3>'.Text::chars($user['login']).'</h3>
+<form action="'.Url::parse('settings').'" method="post">
+	<label for="password_'.$k.'">'.Trad::F_PASSWORD.'</label>
+	<input type="password" name="password" id="password_'.$k.'" />
+	<p class="p-tip">'.Trad::F_TIP_PASSWORD.'</p>
+
+	<label for="rank_'.$k.'">'.Trad::F_RANK.'</label>
+	<select name="rank" id="rank_'.$k.'">
+		'.Text::options(Trad::$ranks, $user['rank']).'
+	</select>
+
+	<p class="p-submit"><input type="submit" value="'.Trad::V_SAVE.'" /></p>
+	<input type="hidden" name="action" value="edit_user" />
+	<input type="hidden" name="id" value="'.$k.'" />
+</form>
+<form action="'.Url::parse('settings').'" method="post">
+	<p class="p-submit"><input type="submit" value="'.Trad::V_REMOVE.'" /></p>
+	<input type="hidden" name="action" value="rm_user" />
+	<input type="hidden" name="id" value="'.$k.'" />
+</form>
+		';
+	}
+
 	$content = '
 
-<form action="'.Url::parse('settings').'" method="post">
+<h2>'.Trad::T_GLOBAL_SETTINGS.'</h2>
 
-	<h2>'.Trad::T_GLOBAL_SETTINGS.'</h2>
+<form action="'.Url::parse('settings').'" method="post">
 
 	<label for="url">'.Trad::F_URL.'</label>
 	<input type="url" name="url" id="url" value="'
@@ -47,19 +103,25 @@
 		'.Text::options($languages, $config['language']).'
 	</select>
 
-	<p>&nbsp;</p>
-	<h2>'.Trad::T_USER_SETTINGS.'</h2>
-
-	<label for="login">'.Trad::F_USERNAME.'</label>
-	<input type="text" name="login" id="login" value="'
-		.Text::chars($config['user']['login'])
-	.'" />
-	<label for="password">'.Trad::F_PASSWORD.'</label>
-	<input type="password" name="password" id="password" />
-	<p class="p-tip">'.Trad::F_TIP_PASSWORD.'</p>
-
 	<p class="p-submit"><input type="submit" value="'.Trad::V_SAVE.'" /></p>
 	<input type="hidden" name="action" value="edit" />
+</form>
+
+<p>&nbsp;</p>
+<h2>'.Trad::T_USERS_SETTINGS.'</h2>
+
+'.$users.'
+
+<h3>'.Trad::F_ADD.'</h3>
+<form action="'.Url::parse('settings').'" method="post">
+	<label for="login">'.Trad::F_USERNAME.'</label>
+	<input type="text" name="login" id="login" />
+
+	<label for="password">'.Trad::F_PASSWORD.'</label>
+	<input type="password" name="password" id="password" />
+
+	<p class="p-submit"><input type="submit" value="'.Trad::V_SAVE.'" /></p>
+	<input type="hidden" name="action" value="add_user" />
 </form>
 
 	';

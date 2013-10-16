@@ -45,6 +45,11 @@ define('FILE_CONFIG', 'config.php');
 define('FILE_ALBUMS', 'albums.php');
 define('FILE_TAGS', 'tags.php');
 
+### Ranks
+define('RANK_ADMIN', 'admin');
+define('RANK_VISITOR', 'visitor');
+define('RANK_NONE', 'none');
+
 ### Thanks to Sebsauvage and Shaarli for the way I store data
 define('PHPPREFIX', '<?php /* '); # Prefix to encapsulate data in php code.
 define('PHPSUFFIX', ' */ ?>'); # Suffix to encapsulate data in php code.
@@ -113,10 +118,18 @@ function getIPs() {
 
 ### Authentification
 $settings = new Settings();
+function getRank() {
+	global $loggedin;
+	if (!$loggedin || !isset($_SESSION['rank'])) {
+		return RANK_NONE;
+	}
+	return $_SESSION['rank'];
+}
 function logout($cookie = false) {
 	if (isset($_SESSION['uid'])) {
 		unset($_SESSION['uid']);
 		unset($_SESSION['login']);
+		unset($_SESSION['rank']);
 		unset($_SESSION['ip']);
 		unset($_SESSION['expires_on']);
 	}
@@ -126,9 +139,20 @@ function logout($cookie = false) {
 	}
 	return true;
 }
+function check_user($login, $password) {
+	global $config;
+	foreach ($config['users'] as $k => $user) {
+		if ($user['login'] == $login
+			&& $user['password'] == Text::getHash($password)
+		) {
+			return $k;
+		}
+	}
+	return false;
+}
 function login($post, $bypass = false) {
 	global $config, $page, $settings;
-	$wait = $config['user']['wait'];
+	$wait = $config['wait'];
 	if (isset($wait[getIPs()]) && $wait[getIPs()]['time'] > time()) {
 		$page->addAlert(str_replace(
 			array('%duration%', '%period%'),
@@ -141,24 +165,30 @@ function login($post, $bypass = false) {
 		if (!isset($post['login']) || !isset($post['password'])) {
 			return false;
 		}
-		if ($post['login'] != $config['user']['login']
-			|| Text::getHash($post['password']) != $config['user']['password']
-		) {
+		$user_id = check_user($post['login'], $post['password']);
+		if ($user_id === false) {
 			$settings->login_failed();
 			$page->addAlert(Trad::A_ERROR_LOGIN);
 			return false;
 		}
+		$cookie = (isset($post['cookie']) && $post['cookie'] == 'true');
 	}
+	else {
+		$user_id = $post;
+		$cookie = true;
+	}
+	$user = $config['users'][$user_id];
 	$uid = Text::randomKey(40);
 	$_SESSION['uid'] = $uid;
-	$_SESSION['login'] = $config['user']['login'];
+	$_SESSION['login'] = $user['login'];
+	$_SESSION['rank'] = $user['rank'];
 	$_SESSION['ip'] = getIPs();
 	$_SESSION['expires_on'] = time()+TIMEOUT;
 		# 0 means "When browser closes"
 	session_set_cookie_params(0, Text::dir($_SERVER["SCRIPT_NAME"]));
 	session_regenerate_id(true);
-	if (isset($post['cookie']) && $post['cookie'] == 'true') {
-		$settings->add_cookie($uid);
+	if ($cookie) {
+		$settings->add_cookie($user_id, $uid);
 		setcookie(
 			'login',
 			$uid,
@@ -180,11 +210,9 @@ if (!isset($_SESSION['uid']) || empty($_SESSION['uid'])
 	|| time() > $_SESSION['expires_on']
 ) {
 	logout();
-	if (isset($_COOKIE['login'])
-		&& $settings->check_cookie($_COOKIE['login'])
-		&& login(array('cookie' => 'true'), true)
-	) {
-		$loggedin = true;
+	if (isset($_COOKIE['login'])) {
+		$user_id = $settings->check_cookie($_COOKIE['login']);
+		$loggedin = ($user_id !== false && login($user_id, true));
 	}
 	else {
 		$loggedin = false;

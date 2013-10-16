@@ -7,13 +7,18 @@ class Page {
 	protected $content;
 	protected $errors = array();
 
-	private $pages = array(
+	protected $pages = array(
 		'home',
 		'install',
 		'login',
 		'error/404',
+		'error/403',
 		'settings',
 		'ajax'
+	);
+
+	protected $restricted = array(
+		'settings' => array(RANK_ADMIN)
 	);
 
 	public function load($page) {
@@ -23,6 +28,12 @@ class Page {
 		if (!in_array($page, $this->pages)) {
 			$this->page = 'error/404';
 			$path = dirname(__FILE__).'/../pages/error/404.php';
+		}
+		if (isset($this->restricted[$this->page])
+			&& !in_array(getRank(), $this->restricted[$this->page])
+		) {
+			$this->page = 'error/403';
+			$path = dirname(__FILE__).'/../pages/error/403.php';
 		}
 		include($path);
 		if (isset($load)) { $this->load($load); }

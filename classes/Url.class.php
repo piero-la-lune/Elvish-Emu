@@ -28,6 +28,10 @@ class Url {
 			'redirect' => 'index.php?page=error/404'
 		),
 		array(
+			'rule' => '^error/403$',
+			'redirect' => 'index.php?page=error/403'
+		),
+		array(
 			'rule' => '^settings$',
 			'redirect' => 'index.php?page=settings'
 		),

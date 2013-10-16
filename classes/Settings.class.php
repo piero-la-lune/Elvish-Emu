@@ -63,22 +63,66 @@ class Settings {
 	protected function c_user($post, $install) {
 		if ($install) {
 			if (isset($post['login']) && isset($post['password'])) {
-				$this->config['user'] = array(
+				$this->config['users'] = array(array(
 					'login' => $post['login'],
 					'password' => Text::getHash($post['password']),
-					'wait' => array(),
-					'cookie' => array()
-				);
+					'cookie' => array(),
+					'rank' => RANK_ADMIN
+				));
 			}
 		}
-		else {
-			if (isset($post['login'])) {
-				$this->config['user']['login'] = $post['login'];
-			}
-			if (isset($post['password']) && !empty($post['password'])) {
-				$this->config['user']['password'] = Text::getHash($post['password']);
+	}
+
+	public function changes_user_add($post) {
+		if (!isset($post['login']) || !isset($post['password'])
+			|| empty($post['login']) || empty($post['password'])
+		) {
+			return Trad::A_ERROR_EMPTY_LOGIN;
+		}
+		foreach ($this->config['users'] as $user) {
+			if ($user['login'] == $post['login']) {
+				return Trad::A_ERROR_SAME_USERNAME;
 			}
 		}
+		$this->config['users'][] = array(
+			'login' => $post['login'],
+			'password' => Text::getHash($post['password']),
+			'cookie' => array(),
+			'rank' => RANK_ADMIN
+		);
+		$this->save();
+		return true;
+	}
+
+	public function changes_user_rm($post) {
+		if (!isset($post['id'])
+			|| !isset($this->config['users'][$post['id']])
+		) {
+			return Trad::A_ERROR_NO_USER;
+		}
+		unset($this->config['users'][$post['id']]);
+		$this->save();
+		return true;
+	}
+
+	public function changes_user_edit($post) {
+		if (!isset($post['password']) || !isset($post['id'])
+			|| !isset($post['rank'])
+		) {
+			return Trad::A_ERROR_FORM;
+		}
+		if (!isset($this->config['users'][$post['id']])) {
+			return Trad::A_ERROR_NO_USER;
+		}
+		if (!empty($post['password'])) {
+			$this->config['users'][$post['id']]['password'] =
+				Text::getHash($post['password']);
+		}
+		if (isset(Trad::$ranks[$post['rank']])) {
+			$this->config['users'][$post['id']]['rank'] = $post['rank'];
+		}
+		$this->save();
+		return true;
 	}
 
 	public function url_rewriting() {
@@ -100,8 +144,8 @@ class Settings {
 	}
 
 	public function login_failed() {
-		if (isset($this->config['user']['wait'][getIPs()])) {
-			$wait = &$this->config['user']['wait'][getIPs()];
+		if (isset($this->config['wait'][getIPs()])) {
+			$wait = &$this->config['wait'][getIPs()];
 			$wait['nb']++;
 			if ($wait['nb'] < 10) {
 				$wait['time'] = time();
@@ -118,7 +162,7 @@ class Settings {
 			unset($wait);
 		}
 		else {
-			$this->config['user']['wait'][getIPs()] = array(
+			$this->config['wait'][getIPs()] = array(
 				'nb' => 1,
 				'time' => time()
 			);
@@ -126,17 +170,19 @@ class Settings {
 		$this->save();
 	}
 
-	public function add_cookie($uid) {
-		$this->config['user']['cookie'][] = $uid;
+	public function add_cookie($uid, $user_id) {
+		$this->config['users'][$user_id]['cookie'][] = $uid;
 		$this->save();
 	}
 
 	public function check_cookie($uid) {
-		$k = array_search($uid, $this->config['user']['cookie']);
-		if ($k !== false) {
-			unset($this->config['user']['cookie'][$k]);
-			$this->save();
-			return true;
+		foreach ($this->config['users'] as $k => $user) {
+			$l = array_search($uid, $user['cookie']);
+			if ($l !== false) {
+				unset($this->config['users'][$k]['cookie'][$l]);
+				$this->save();
+				return true;
+			}
 		}
 		return false;
 	}
@@ -147,12 +193,15 @@ class Settings {
 				.Text::dir($_SERVER["SCRIPT_NAME"]),
 			'url_rewriting' => false,
 			'language' => $language,
-			'user' => array(
-				'login' => 'admin',
-				'password' => 'admin',
-				'wait' => array(),
-				'cookie' => array(),
+			'users' => array(
+				array(
+					'login' => 'admin',
+					'password' => 'admin',
+					'cookie' => array(),
+					'rank' => RANK_ADMIN
+				)
 			),
+			'wait' => array(),
 			'salt' => Text::randomKey(40),
 			'version' => VERSION,
 			'last_update' => false
