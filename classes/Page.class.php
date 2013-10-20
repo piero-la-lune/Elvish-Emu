@@ -14,11 +14,14 @@ class Page {
 		'error/404',
 		'error/403',
 		'settings',
-		'ajax'
+		'new',
+		'view',
+		'edit'
 	);
 
-	protected $restricted = array(
-		'settings' => array(RANK_ADMIN)
+	public static $restricted = array(
+		'settings' => array(RANK_ADMIN),
+		'edit' => array(RANK_ADMIN)
 	);
 
 	public function load($page) {
@@ -29,8 +32,8 @@ class Page {
 			$this->page = 'error/404';
 			$path = dirname(__FILE__).'/../pages/error/404.php';
 		}
-		if (isset($this->restricted[$this->page])
-			&& !in_array(getRank(), $this->restricted[$this->page])
+		if (isset(self::$restricted[$this->page])
+			&& !in_array(getRank(), self::$restricted[$this->page])
 		) {
 			$this->page = 'error/403';
 			$path = dirname(__FILE__).'/../pages/error/403.php';

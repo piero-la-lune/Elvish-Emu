@@ -75,12 +75,12 @@
 
 	<p class="p-submit"><input type="submit" value="'.Trad::V_SAVE.'" /></p>
 	<input type="hidden" name="action" value="edit_user" />
-	<input type="hidden" name="id" value="'.$k.'" />
+	<input type="hidden" name="lid" value="'.$k.'" />
 </form>
 <form action="'.Url::parse('settings').'" method="post">
 	<p class="p-submit"><input type="submit" value="'.Trad::V_REMOVE.'" /></p>
 	<input type="hidden" name="action" value="rm_user" />
-	<input type="hidden" name="id" value="'.$k.'" />
+	<input type="hidden" name="lid" value="'.$k.'" />
 </form>
 		';
 	}

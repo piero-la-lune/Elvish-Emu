@@ -118,6 +118,13 @@ function getIPs() {
 
 ### Authentification
 $settings = new Settings();
+function getLID() {
+	global $loggedin;
+	if (!$loggedin || !isset($_SESSION['lid'])) {
+		return '';
+	}
+	return $_SESSION['lid'];
+}
 function getRank() {
 	global $loggedin;
 	if (!$loggedin || !isset($_SESSION['rank'])) {
@@ -125,27 +132,31 @@ function getRank() {
 	}
 	return $_SESSION['rank'];
 }
+function canAccess($page) {
+	return !isset(Page::$restricted[$page])
+		|| in_array(getRank(), Page::$restricted[$page]);
+}
 function logout($cookie = false) {
 	if (isset($_SESSION['uid'])) {
 		unset($_SESSION['uid']);
-		unset($_SESSION['login']);
+		unset($_SESSION['lid']);
 		unset($_SESSION['rank']);
 		unset($_SESSION['ip']);
 		unset($_SESSION['expires_on']);
 	}
-	if ($cookie && isset($_COOKIE['login'])) {
-		setcookie('login', NULL, time()-3600);
-		unset($_COOKIE['login']);
+	if ($cookie && isset($_COOKIE['uid'])) {
+		setcookie('uid', NULL, time()-3600);
+		unset($_COOKIE['uid']);
 	}
 	return true;
 }
 function check_user($login, $password) {
 	global $config;
-	foreach ($config['users'] as $k => $user) {
+	foreach ($config['users'] as $lid => $user) {
 		if ($user['login'] == $login
 			&& $user['password'] == Text::getHash($password)
 		) {
-			return $k;
+			return $lid;
 		}
 	}
 	return false;
@@ -165,8 +176,8 @@ function login($post, $bypass = false) {
 		if (!isset($post['login']) || !isset($post['password'])) {
 			return false;
 		}
-		$user_id = check_user($post['login'], $post['password']);
-		if ($user_id === false) {
+		$lid = check_user($post['login'], $post['password']);
+		if ($lid === false) {
 			$settings->login_failed();
 			$page->addAlert(Trad::A_ERROR_LOGIN);
 			return false;
@@ -174,23 +185,22 @@ function login($post, $bypass = false) {
 		$cookie = (isset($post['cookie']) && $post['cookie'] == 'true');
 	}
 	else {
-		$user_id = $post;
+		$lid = $post;
 		$cookie = true;
 	}
-	$user = $config['users'][$user_id];
 	$uid = Text::randomKey(40);
 	$_SESSION['uid'] = $uid;
-	$_SESSION['login'] = $user['login'];
-	$_SESSION['rank'] = $user['rank'];
+	$_SESSION['lid'] = $lid;
+	$_SESSION['rank'] = $config['users'][$lid]['rank'];
 	$_SESSION['ip'] = getIPs();
 	$_SESSION['expires_on'] = time()+TIMEOUT;
 		# 0 means "When browser closes"
 	session_set_cookie_params(0, Text::dir($_SERVER["SCRIPT_NAME"]));
 	session_regenerate_id(true);
 	if ($cookie) {
-		$settings->add_cookie($user_id, $uid);
+		$settings->add_cookie($lid, $uid);
 		setcookie(
-			'login',
+			'uid',
 			$uid,
 			time()+TIMEOUT_COOKIE,
 			Text::dir($_SERVER["SCRIPT_NAME"])
@@ -210,9 +220,9 @@ if (!isset($_SESSION['uid']) || empty($_SESSION['uid'])
 	|| time() > $_SESSION['expires_on']
 ) {
 	logout();
-	if (isset($_COOKIE['login'])) {
-		$user_id = $settings->check_cookie($_COOKIE['login']);
-		$loggedin = ($user_id !== false && login($user_id, true));
+	if (isset($_COOKIE['uid'])) {
+		$lid = $settings->check_cookie($_COOKIE['uid']);
+		$loggedin = $lid !== false && login($lid, true);
 	}
 	else {
 		$loggedin = false;
@@ -288,13 +298,28 @@ if ($page->printHeader()) {
 			.($pagename == 'home' ? 'class="selected"' : '').'>'
 			.mb_strtolower(Trad::T_HOME)
 		.'</a>'
-		.'<a href="'.Url::parse('settings').'"'
-			.($pagename == 'settings' ? 'class="selected"' : '').'>'
-			.mb_strtolower(Trad::T_SETTINGS)
-		.'</a>'
+	;
+	if (canAccess('new')) {
+		$menu .= ''
+			.'<a href="'.Url::parse('new').'"'
+				.($pagename == 'new' ? 'class="selected"' : '').'>'
+				.mb_strtolower(Trad::T_NEW)
+			.'</a>'
+		;
+	}
+	if (canAccess('settings')) {
+		$menu .= ''
+			.'<a href="'.Url::parse('settings').'"'
+				.($pagename == 'settings' ? 'class="selected"' : '').'>'
+				.mb_strtolower(Trad::T_SETTINGS)
+			.'</a>'
+		;
+	}
+	$menu .= ''
 		.'<a href="#" id="logout">'
 			.mb_strtolower(Trad::T_LOGOUT)
-		.'</a>';
+		.'</a>'
+	;
 }
 
 ?>

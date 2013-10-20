@@ -33,12 +33,13 @@ class Trad {
 	const V_CONTINUE = 'Continuer';
 	const V_SAVE = 'Enregistrer';
 	const V_REMOVE = 'Supprimer';
+	const V_EDIT = 'Modifier';
 
 		# Forms
 
 	const F_USERNAME = 'Nom d\'utilisateur :';
 	const F_PASSWORD = 'Mot de passe :';
-	const F_RANK = 'Rang';
+	const F_RANK = 'Rang :';
 	const F_COOKIE = 'Type de connexion :';
 	const F_COOKIE_FALSE = 'Ordinateur public';
 	const F_COOKIE_TRUE = 'Ordinateur privé (rester connecté)';
@@ -46,6 +47,10 @@ class Trad {
 	const F_URL_REWRITING = 'URL rewriting :';
 	const F_LANGUAGE = 'Langue :';
 	const F_ADD = 'Ajouter :';
+	const F_AUTHORIZED_USERS = 'Utilisateurs :';
+
+	const F_NAME = 'Nom de l\'album :';
+	const F_COMMENT = 'Commentaires :';
 
 	const F_TIP_PASSWORD = 'Laissez vide pour ne pas le changer.';
 	const F_TIP_URL_REWRITING = 'Laissez vide pour désactiver l\'URL rewriting. Sinon, indiquez le chemin du dossier de Elvish Emu (en commençant et terminant par un "/") par rapport au nom de domaine.';
@@ -61,6 +66,9 @@ class Trad {
 	const T_GLOBAL_SETTINGS = 'Réglages généraux';
 	const T_USERS_SETTINGS = 'Utilisateurs';
 	const T_HOME = 'Accueil';
+	const T_NEW = 'Nouveau';
+	const T_NEW_ALBUM = 'Nouveau album';
+	const T_ALBUMS = 'Albums';
 
 		# Alertes
 
@@ -72,12 +80,16 @@ class Trad {
 	const A_ERROR_SAME_USERNAME = 'Ce nom d\'utilisateur est déjà utilisé.';
 	const A_ERROR_EMPTY_LOGIN = 'Merci de spécifier un nom d\'utilisateur et un mot de passe.';
 	const A_ERROR_NO_USER = 'Aucun utilisateur ne correspond.';
+	const A_ERROR_EMPTY_NAME = 'Merci de donner un nom à l\'album.';
 
 	const A_SUCCESS_INSTALL = 'Elvish Emu est maintenant correctement installé. Connectez-vous pour commencer à l\'utiliser.';
 	const A_SUCCESS_SETTINGS = 'Les préférences ont bien été enregistrées.';
 	const A_SUCCESS_USER_ADD = 'L\'utilisateur a bien été ajouté.';
 	const A_SUCCESS_USER_RM = 'L\'utilisateur a bien été supprimé.';
 	const A_SUCCESS_USER_EDIT = 'L\'utilisateur a bien été modifié.';
+	const A_SUCCESS_NEW_ALBUM = 'L\'album a bien été créé.';
+	const A_SUCCESS_EDIT_ALBUM = 'L\'album a bien été modifié.';
+	const A_SUCCESS_RM_ALBUM = 'L\'album a bien été supprimé.';
 
 	public static $settings = array(
 		'validate_url' => 'L\'url n\'est pas valide.'

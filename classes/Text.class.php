@@ -118,9 +118,10 @@ class Text {
 
 	public static function options($arr, $sel) {
 		$ret = '';
+		if (!is_array($sel)) { $sel = array($sel); }
 		foreach ($arr as $k => $v) {
 			$ret .= '<option value="'.$k.'"';
-			if ($k == $sel) { $ret .= ' selected'; }
+			if (in_array($k, $sel)) { $ret .= ' selected'; }
 			$ret .= '>'.$v.'</option>';
 		}
 		return $ret;

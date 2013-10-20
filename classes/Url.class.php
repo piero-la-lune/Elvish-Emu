@@ -36,8 +36,16 @@ class Url {
 			'redirect' => 'index.php?page=settings'
 		),
 		array(
-			'rule' => '^ajax$',
-			'redirect' => 'index.php?page=ajax'
+			'rule' => '^new$',
+			'redirect' => 'index.php?page=new'
+		),
+		array(
+			'rule' => '^albums/([a-f0-9]{8})$',
+			'redirect' => 'index.php?page=view&id=$1'
+		),
+		array(
+			'rule' => '^albums/([a-f0-9]{8})/edit$',
+			'redirect' => 'index.php?page=edit&id=$1'
 		)
 	);
 

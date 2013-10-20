@@ -37,3 +37,4 @@ header a.selected{font-weight:bold;}
 .alert{padding:12px;text-align:center;cursor:pointer;color:#444;}.alert:hover{color:#000;}
 .alert-error{background:#ed92ac;}
 .alert-success{background:#8dd69d;}
+.a-album{display:inline-block;padding:6px;margin:12px;border:3px solid #DDD;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;font-size:1.6em;font-weight:900;}.a-album:hover{border-color:#444;text-decoration:none;}
