@@ -41,6 +41,7 @@ define('TIMEOUT_COOKIE', 3600*24*365); # 1 year
 define('DIR_CURRENT', dirname(__FILE__).'/');
 define('DIR_DATABASE', dirname(__FILE__).'/database/');
 define('DIR_LANGUAGES', dirname(__FILE__).'/languages/');
+define('FOL_FILES', 'files/');
 define('FILE_CONFIG', 'config.php');
 define('FILE_ALBUMS', 'albums.php');
 define('FILE_TAGS', 'tags.php');
@@ -253,7 +254,7 @@ function check_dir($dirname) {
 		&& (!mkdir(DIR_DATABASE.$dirname, 0705)
 			|| !chmod(DIR_DATABASE.$dirname, 0705))
 	) {
-		die('Enable to create directory “'. DIR_DATABASE.$filename.'”');
+		die('Enable to create directory “'. DIR_DATABASE.$dirname.'”');
 	}
 }
 function check_file($filename, $content = '') {
@@ -262,6 +263,7 @@ function check_file($filename, $content = '') {
 	}
 }
 check_dir('');
+check_dir(FOL_FILES);
 check_file(FILE_ALBUMS, Text::hash(array()));
 check_file(FILE_TAGS, Text::hash(array()));
 check_file('.htaccess', "Allow from none\nDeny from all\n");

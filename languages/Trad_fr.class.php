@@ -48,6 +48,7 @@ class Trad {
 	const F_LANGUAGE = 'Langue :';
 	const F_ADD = 'Ajouter :';
 	const F_AUTHORIZED_USERS = 'Utilisateurs :';
+	const F_DIR = 'Dossier :';
 
 	const F_NAME = 'Nom de l\'album :';
 	const F_COMMENT = 'Commentaires :';

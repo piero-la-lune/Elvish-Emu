@@ -21,6 +21,9 @@
 		$access = (isset($_POST['access']))?
 			$_POST['access']:
 			$album['access'];
+		$dir = (isset($_POST['dir']))?
+			$_POST['dir']:
+			$album['dir'];
 
 		if (isset($_POST['action']) && $_POST['action'] == 'edit') {
 			$ans = $manager->editAlbum($id, $_POST);
@@ -65,6 +68,11 @@
 	<label for="access">'.Trad::F_AUTHORIZED_USERS.'</label>
 	<select id="access" name="access[]" multiple>
 		'.Text::options($logins, $access).'
+	</select>
+
+	<label for="dir">'.Trad::F_DIR.'</label>
+	<select id="dir" name="dir">
+		'.Text::options($manager->getDirs(), $dir).'
 	</select>
 
 	<p class="p-submit"><input type="submit" value="'.Trad::V_SAVE.'" /></p>

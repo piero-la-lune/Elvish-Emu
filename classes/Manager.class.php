@@ -3,6 +3,7 @@
 # Albums model :
 # 	name => escaped (string)
 # 	comment => (string)
+# 	dir => (string)
 # 	files => (File)
 # 	access => (string array)
 #
@@ -13,6 +14,17 @@
 #	comment => (string)
 
 class Manager {
+
+	protected $img_extensions = array(
+		'png', 'PNG',
+		'jpg', 'jpeg', 'JPG', 'JPEG',
+		'gif', 'GIF'
+	);
+	protected $vid_extensions = array(
+		'avi', 'AVI',
+		'mp4', 'MP4',
+		'mov', 'MOV'
+	);
 
 	private static $instance;
 	protected $albums = array();
@@ -55,12 +67,13 @@ class Manager {
 		global $config;
 		if (!isset($post['name']) || !isset($post['comment'])
 			|| !isset($post['access']) || !is_array($post['access'])
+			|| !isset($post['dir'])
 		) {
 			return Trad::A_ERROR_FORM;
 		}
-		if (empty($post['name'])) {
-			return Trad::A_ERROR_EMPTY_NAME;
-		}
+		if (empty($post['name'])) { return Trad::A_ERROR_EMPTY_NAME; }
+		$files = $this->getFiles($post['dir']);
+		if ($files === false) { return Trad::A_ERROR_FORM; }
 		$access = array();
 		foreach ($post['access'] as $lid) {
 			if (isset($config['users'][$lid])) { $access[] = $lid; }
@@ -71,7 +84,8 @@ class Manager {
 		$this->albums[$id] = array(
 			'name' => Text::chars($post['name']),
 			'comment' => $post['comment'],
-			'files' => array(),
+			'dir' => $post['dir'],
+			'files' => $files,
 			'access' => $access
 		);
 		$this->lastInserted = $id;
@@ -83,13 +97,14 @@ class Manager {
 		global $config;
 		if (!isset($post['name']) || !isset($post['comment'])
 			|| !isset($post['access']) || !is_array($post['access'])
+			|| !isset($post['dir'])
 			|| !isset($this->albums[$id])
 		) {
 			return Trad::A_ERROR_FORM;
 		}
-		if (empty($post['name'])) {
-			return Trad::A_ERROR_EMPTY_NAME;
-		}
+		if (empty($post['name'])) { return Trad::A_ERROR_EMPTY_NAME; }
+		$files = $this->getFiles($post['dir']);
+		if ($files === false) { return Trad::A_ERROR_FORM; }
 		$access = array();
 		foreach ($post['access'] as $lid) {
 			if (isset($config['users'][$lid])) { $access[] = $lid; }
@@ -97,7 +112,8 @@ class Manager {
 		$this->albums[$id] = array(
 			'name' => Text::chars($post['name']),
 			'comment' => $post['comment'],
-			'files' => array(),
+			'dir' => $post['dir'],
+			'files' => $files,
 			'access' => $access
 		);
 		$this->save();
@@ -112,6 +128,60 @@ class Manager {
 		unset($this->albums[$id]);
 		$this->save();
 		return true;
+	}
+
+	public function getDirs() {
+		$dir = opendir(DIR_DATABASE.FOL_FILES);
+		$dirs = array();
+		while (($entry = readdir($dir)) !== false) {
+			if (is_dir(DIR_DATABASE.FOL_FILES.$entry)
+				&& preg_match('#^[a-zA-Z0-9-_]+$#', $entry)
+			) {
+				$dirs[$entry] = $entry;
+			}
+		}
+		return $dirs;
+	}
+
+	public function getFiles($dir) {
+		if (!is_dir(DIR_DATABASE.FOL_FILES.$dir)
+			|| !preg_match('#^[a-zA-Z0-9-_]+$#', $dir)
+		) {
+			return false;
+		}
+		$dir = opendir(DIR_DATABASE.FOL_FILES.$dir);
+		$files = array();
+		while (($entry = readdir($dir)) !== false) {
+			if (!is_dir($entry)) {
+				if (preg_match(
+					'#^[a-zA-Z0-9-_]+\.('
+						.implode('|', $this->img_extensions)
+					.')$#',
+					$entry
+				)) {
+					$files[$entry] = array(
+						'type' => 'image',
+						'filename' => $entry,
+						'path' => DIR_DATABASE.FOL_FILES.$dir.$entry,
+						'comment' => ''
+					);
+				}
+				if (preg_match(
+					'#^[a-zA-Z0-9-_]+\.('
+						.implode('|', $this->vid_extensions)
+					.')$#',
+					$entry
+				)) {
+					$files[$entry] = array(
+						'type' => 'video',
+						'filename' => $entry,
+						'path' => DIR_DATABASE.FOL_FILES.$dir.$entry,
+						'comment' => ''
+					);
+				}
+			}
+		}
+		return $files;
 	}
 
 	public function getLastInserted() {
