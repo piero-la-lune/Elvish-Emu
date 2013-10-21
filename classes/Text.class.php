@@ -157,6 +157,29 @@ class Text {
 		return str_replace("'", "\\'", $string);
 	}
 
+	public static function get_mime_type($filename) {
+		$parts = explode('.', $filename);
+		$ext = strtolower($parts[count($parts)-1]);
+		switch ($ext) {
+			case 'jpg':
+				return 'image/jpeg';
+			case 'jpeg':
+			case 'png':
+			case 'gif':
+				return 'image/'.$ext;
+			case 'avi':
+				return 'video/x-msvideo';
+			case 'mp4':
+				return 'video/mp4';
+			case 'wmv':
+				return 'video/x-ms-wmv';
+			case 'mov':
+				return 'video/quicktime';
+			default:
+				return '';
+		}
+	}
+
 }
 
 ?>

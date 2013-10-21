@@ -21,6 +21,8 @@ class Trad {
 	const W_YEAR_P = 'années';
 	const W_DECADE_P = 'décennies';
 
+	const W_BACK = 'Retour à l\'album';
+
 		# Phrases
 
 	const S_AGO = 'il y a %duration% %pediod%';
@@ -51,7 +53,7 @@ class Trad {
 	const F_DIR = 'Dossier :';
 
 	const F_NAME = 'Nom de l\'album :';
-	const F_COMMENT = 'Commentaires :';
+	const F_COMMENT = 'Commentaire :';
 
 	const F_TIP_PASSWORD = 'Laissez vide pour ne pas le changer.';
 	const F_TIP_URL_REWRITING = 'Laissez vide pour désactiver l\'URL rewriting. Sinon, indiquez le chemin du dossier de Elvish Emu (en commençant et terminant par un "/") par rapport au nom de domaine.';
@@ -91,6 +93,7 @@ class Trad {
 	const A_SUCCESS_NEW_ALBUM = 'L\'album a bien été créé.';
 	const A_SUCCESS_EDIT_ALBUM = 'L\'album a bien été modifié.';
 	const A_SUCCESS_RM_ALBUM = 'L\'album a bien été supprimé.';
+	const A_SUCCESS_EDIT_FILE = 'Le fichier a bien été modifié.';
 
 	public static $settings = array(
 		'validate_url' => 'L\'url n\'est pas valide.'

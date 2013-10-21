@@ -120,6 +120,11 @@
 	<label for="password">'.Trad::F_PASSWORD.'</label>
 	<input type="password" name="password" id="password" />
 
+	<label for="rank">'.Trad::F_RANK.'</label>
+	<select name="rank" id="rank">
+		'.Text::options(Trad::$ranks, array()).'
+	</select>
+
 	<p class="p-submit"><input type="submit" value="'.Trad::V_SAVE.'" /></p>
 	<input type="hidden" name="action" value="add_user" />
 </form>

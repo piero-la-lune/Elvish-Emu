@@ -26,11 +26,41 @@
 
 		$content .= '
 
+<article class="article-all">
+
 <h1>'.$album['name'].'</h1>
 
 <p>'.\Michelf\Markdown::defaultTransform($album['comment']).'</p>
+<p>&nbsp;</p>
+
+<div class="div-imgs">
 
 		';
+
+		$videos = '';
+		foreach ($album['files'] as $k => $f) {
+			if ($f['type'] == 'image') {
+				$content .= ''
+.'<a href="'.Url::parse('albums/'.$id.'/'.$k.'/view').'">'
+	.'<img src="'.Url::parse('albums/'.$id.'/dl/'.$k).'" />'
+.'</a>';
+			}
+			elseif ($f['type'] == 'video') {
+				$videos .= ''
+.'<a href="'.Url::parse('albums/'.$id.'/dl/'.$k).'">'
+	.$f['filename']
+.'</a>';
+			}
+		}
+
+		$content .= '
+
+</div>
+<div class="div-videos">'.$videos.'</div>
+
+</article>
+
+';
 
 	}
 	else {

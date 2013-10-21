@@ -46,7 +46,23 @@ class Url {
 		array(
 			'rule' => '^albums/([a-f0-9]{8})/edit$',
 			'redirect' => 'index.php?page=edit&id=$1'
-		)
+		),
+		array(
+			'rule' => '^albums/([a-f0-9]{8})/(.*)/view$',
+			'redirect' => 'index.php?page=view_file&album=$1&filename=$2'
+		),
+		array(
+			'rule' => '^albums/([a-f0-9]{8})/dl/(.*)$',
+			'redirect' => 'index.php?page=dl_file&album=$1&filename=$2'
+		),
+		array(
+			'rule' => '^albums/([a-f0-9]{8})/(.*)/edit$',
+			'redirect' => 'index.php?page=edit_file&album=$1&filename=$2'
+		),
+		array(
+			'rule' => '^ajax$',
+			'redirect' => 'index.php?page=ajax'
+		),
 	);
 
 	public function __construct($page, $params = array(), $anchor = '') {

@@ -16,12 +16,18 @@ class Page {
 		'settings',
 		'new',
 		'view',
-		'edit'
+		'edit',
+		'view_file',
+		'dl_file',
+		'edit_file',
+		'ajax'
 	);
 
 	public static $restricted = array(
 		'settings' => array(RANK_ADMIN),
-		'edit' => array(RANK_ADMIN)
+		'new' => array(RANK_ADMIN),
+		'edit' => array(RANK_ADMIN),
+		'edit_file' => array(RANK_ADMIN)
 	);
 
 	public function load($page) {

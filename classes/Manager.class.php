@@ -130,6 +130,15 @@ class Manager {
 		return true;
 	}
 
+	public function editFile($album, $filename, $post) {
+		if (!isset($post['comment'])) {
+			return Trad::A_ERROR_FORM;
+		}
+		$this->albums[$album]['files'][$filename]['comment'] = $post['comment'];
+		$this->save();
+		return true;
+	}
+
 	public function getDirs() {
 		$dir = opendir(DIR_DATABASE.FOL_FILES);
 		$dirs = array();
@@ -143,13 +152,13 @@ class Manager {
 		return $dirs;
 	}
 
-	public function getFiles($dir) {
-		if (!is_dir(DIR_DATABASE.FOL_FILES.$dir)
-			|| !preg_match('#^[a-zA-Z0-9-_]+$#', $dir)
+	public function getFiles($dirname) {
+		if (!is_dir(DIR_DATABASE.FOL_FILES.$dirname)
+			|| !preg_match('#^[a-zA-Z0-9-_]+$#', $dirname)
 		) {
 			return false;
 		}
-		$dir = opendir(DIR_DATABASE.FOL_FILES.$dir);
+		$dir = opendir(DIR_DATABASE.FOL_FILES.$dirname);
 		$files = array();
 		while (($entry = readdir($dir)) !== false) {
 			if (!is_dir($entry)) {
@@ -162,7 +171,7 @@ class Manager {
 					$files[$entry] = array(
 						'type' => 'image',
 						'filename' => $entry,
-						'path' => DIR_DATABASE.FOL_FILES.$dir.$entry,
+						'path' => DIR_DATABASE.FOL_FILES.$dirname.'/'.$entry,
 						'comment' => ''
 					);
 				}
@@ -175,17 +184,61 @@ class Manager {
 					$files[$entry] = array(
 						'type' => 'video',
 						'filename' => $entry,
-						'path' => DIR_DATABASE.FOL_FILES.$dir.$entry,
+						'path' => DIR_DATABASE.FOL_FILES.$dirname.'/'.$entry,
 						'comment' => ''
 					);
 				}
 			}
 		}
+		ksort($files);
 		return $files;
 	}
 
 	public function getLastInserted() {
 		return $this->lastInserted;
+	}
+
+	public static function printImage($albumID, $album, $filename) {
+		list($prev, $next) = self::getPrevNext($album['files'], $filename);
+		$prevA = '';
+		if ($prev !== false) {
+			$prevA = '<a href="#" onclick="load(\''.$albumID.'\', \''.$prev.'\');">«</a>';
+		}
+		$nextA = '';
+		if ($next !== false) {
+			$nextA = '<a href="#" onclick="load(\''.$albumID.'\', \''.$next.'\');">»</a>';
+		}
+
+		return '
+
+<div class="div-table div-img-header">
+	<div class="div-cell div-a">'.$prevA.'</div>
+	<div class="div-cell div-h">
+		<h1>'.$filename.'</h1>
+	</div>
+	<div class="div-cell div-a">'.$nextA.'</div>
+</div>
+
+<div class="div-img">
+	<img class="img-display" src="'.Url::parse('albums/'.$albumID.'/dl/'.$filename).'" />
+</div>
+
+<p>'.\Michelf\Markdown::defaultTransform($album['files'][$filename]['comment']).'</p>
+
+		';
+	}
+
+	public static function getPrevNext($files, $filename) {
+		$prev = false;
+		$next = false;
+		$done = false;
+		foreach ($files as $f) {
+			if ($f['type'] != 'image') { continue; }
+			if ($done) { $next = $f['filename']; break; }
+			if ($f['filename'] == $filename) { $done = true; }
+			else { $prev = $f['filename']; }
+		}
+		return array($prev, $next);
 	}
 
 }

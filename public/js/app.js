@@ -139,7 +139,7 @@ function onload_tags() {
 		pick.style.top = pos.bottom+'px';
 		addTag.onkeyup(); // On initialise la liste en fonction de addTag
 	};
-	addTag.onblur = function(e) {
+	addTag.onblur = function() {
 		if (!keepFocus) {
 			pick.style.left = '-9999px';
 			pick.style.top = '-9999px';
@@ -165,3 +165,22 @@ function onload_tags() {
 	update_tags();
 }
 if (isset(document.querySelector('.editTags'))) { onload_tags(); }
+
+var imgDisplay = document.querySelector('.img-display');
+if (isset(imgDisplay)) {
+	imgDisplay.style = 'max-height:'+Math.max(window.outerHeight-200, 200)+'px';
+}
+
+function load(albumID, filename) {
+	var ajax = new Ajax(undefined, 'load');
+	ajax.addParam('album', albumID);
+	ajax.addParam('filename', filename);
+	ajax.send(function(ans) {
+		document.querySelector('article').innerHTML = ans['html'];
+		document.querySelector('.img-display').style = 'max-height:'+Math.max(window.outerHeight-200, 200)+'px';
+		var as =  document.querySelectorAll('.div-actions-top a');
+		if (as.length > 1) {
+			as[0].href = ans['url'];
+		}
+	});
+}
