@@ -56,6 +56,10 @@ class Url {
 			'redirect' => 'index.php?page=dl_file&album=$1&filename=$2'
 		),
 		array(
+			'rule' => '^albums/([a-f0-9]{8})/th/(.*)$',
+			'redirect' => 'index.php?page=dl_file&album=$1&filename=$2&thumbnail=1'
+		),
+		array(
 			'rule' => '^albums/([a-f0-9]{8})/(.*)/edit$',
 			'redirect' => 'index.php?page=edit_file&album=$1&filename=$2'
 		),

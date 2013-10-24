@@ -40,16 +40,32 @@
 		$videos = '';
 		foreach ($album['files'] as $k => $f) {
 			if ($f['type'] == 'image') {
-				$content .= ''
+				if ($f['thumbnail']) {
+					$content .= ''
+.'<a href="'.Url::parse('albums/'.$id.'/'.$k.'/view').'">'
+	.'<img src="'.Url::parse('albums/'.$id.'/th/'.$k).'" />'
+.'</a>';
+				}
+				else {
+					$content .= ''
 .'<a href="'.Url::parse('albums/'.$id.'/'.$k.'/view').'">'
 	.'<img src="'.Url::parse('albums/'.$id.'/dl/'.$k).'" />'
 .'</a>';
+				}
 			}
 			elseif ($f['type'] == 'video') {
-				$videos .= ''
+				if ($f['thumbnail']) {
+					$videos .= ''
+.'<a href="'.Url::parse('albums/'.$id.'/dl/'.$k).'">'
+	.'<img src="'.Url::parse('albums/'.$id.'/th/'.$k).'" />'
+.'</a>';
+				}
+				else {
+					$videos .= ''
 .'<a href="'.Url::parse('albums/'.$id.'/dl/'.$k).'">'
 	.$f['filename']
 .'</a>';
+				}
 			}
 		}
 

@@ -158,9 +158,7 @@ class Text {
 	}
 
 	public static function get_mime_type($filename) {
-		$parts = explode('.', $filename);
-		$ext = strtolower($parts[count($parts)-1]);
-		switch ($ext) {
+		switch (self::get_ext($filename)) {
 			case 'jpg':
 				return 'image/jpeg';
 			case 'jpeg':
@@ -178,6 +176,11 @@ class Text {
 			default:
 				return '';
 		}
+	}
+
+	public static function get_ext($filename) {
+		$parts = explode('.', $filename);
+		return strtolower($parts[count($parts)-1]);
 	}
 
 }

@@ -11,6 +11,7 @@
 #	type => (string) 'image|video'
 #	filename => escaped (string)
 #	path => (string)
+#	thumbnail => (string) | false
 #	comment => (string)
 
 class Manager {
@@ -172,6 +173,7 @@ class Manager {
 						'type' => 'image',
 						'filename' => $entry,
 						'path' => DIR_DATABASE.FOL_FILES.$dirname.'/'.$entry,
+						'thumbnail' => $this->thumbnailImg($entry, $dirname),
 						'comment' => ''
 					);
 				}
@@ -185,6 +187,7 @@ class Manager {
 						'type' => 'video',
 						'filename' => $entry,
 						'path' => DIR_DATABASE.FOL_FILES.$dirname.'/'.$entry,
+						'thumbnail' => $this->thumbnailVid($entry, $dirname),
 						'comment' => ''
 					);
 				}
@@ -192,6 +195,68 @@ class Manager {
 		}
 		ksort($files);
 		return $files;
+	}
+
+	protected function thumbnailImg($filename, $dirname) {
+		$maxWidth = 200;
+		$maxHeight = 200;
+		$path = DIR_DATABASE.FOL_FILES.$dirname.'/'.$filename;
+		$pathNew = DIR_DATABASE.FOL_FILES.$dirname.'/'.FOL_THUMBNAILS.$filename;
+		if (file_exists($pathNew)) { return $pathNew; }
+		$ext = Text::get_ext($filename);
+		if ($ext == 'jpg' || $ext == 'jpeg') {
+			$img = imagecreatefromjpeg($path);
+		}
+		elseif ($ext == 'gif') {
+			$img = imagecreatefromgif($path);
+		}
+		elseif ($ext == 'png') {
+			$img == imagecreatefrompng($path);
+		}
+		else {
+			return false;
+		}
+		$width = imageSX($img);
+		$height = imageSY($img);
+		$ratio = $width/$height;
+		if ($width > $maxWidth) {
+			$width = $maxWidth;
+			$height = $maxWidth/$ratio;
+		}
+		if ($height > $maxHeight) {
+			$width = $maxHeight*$ratio;
+			$height = $maxHeight;
+		}
+		$newImg = imagecreatetruecolor($width, $height);
+		imagecopyresampled($newImg, $img, 0, 0, 0, 0,
+			$width, $height, imageSX($img), imageSY($img));
+		check_dir(FOL_FILES.$dirname.'/'.FOL_THUMBNAILS);
+		if ($ext == 'jpg' || $ext == 'jpeg') {
+			imagejpeg($newImg, $pathNew);
+		}
+		elseif ($ext == 'gif') {
+			imagegif($newImg, $pathNew);
+		}
+		elseif ($ext == 'png') {
+			imagepng($newImg, $pathNew);
+		}
+		return $pathNew;
+	}
+
+	protected function thumbnailVid($filename, $dirname) {
+/*		$ffmpeg = dirname(__FILE__).'/../../ffmpeg-mutu';
+		$second = 15;
+		$video = DIR_DATABASE.FOL_FILES.$dirname.'/'.$filename;
+		$image = DIR_DATABASE.FOL_FILES.$dirname.'/'.FOL_THUMBNAILS.$filename.'.jpg';
+		$command = "$ffmpeg  -itsoffset -$second  -i $video -vcodec mjpeg -vframes 1 -an -f rawvideo -s 150×84 $image";
+		echo exec($command);
+		echo $ffmpeg;
+		if (file_exists($image)) {
+			return DIR_DATABASE.FOL_FILES.$dirname.'/'.FOL_THUMBNAILS.$filename;
+		}*/
+		$pathNew = DIR_DATABASE.FOL_FILES.$dirname.'/'.FOL_THUMBNAILS.$filename.'.png';
+		if (file_exists($pathNew)) { return $pathNew; }
+		return false;
 	}
 
 	public function getLastInserted() {

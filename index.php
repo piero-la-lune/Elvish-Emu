@@ -24,7 +24,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 define('NAME', 'Elvish Emu');
-define('VERSION', '0.1');
+define('VERSION', '0.2');
 define('AUTHOR', 'Pierre Monchalin');
 define('URL', 'http://bugs.derivoile.fr/Elvish-Emu/dashboard');
 
@@ -42,6 +42,7 @@ define('DIR_CURRENT', dirname(__FILE__).'/');
 define('DIR_DATABASE', dirname(__FILE__).'/database/');
 define('DIR_LANGUAGES', dirname(__FILE__).'/languages/');
 define('FOL_FILES', 'files/');
+define('FOL_THUMBNAILS', 'thumbnails/');
 define('FILE_CONFIG', 'config.php');
 define('FILE_ALBUMS', 'albums.php');
 define('FILE_TAGS', 'tags.php');

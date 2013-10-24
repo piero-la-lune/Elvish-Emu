@@ -17,11 +17,17 @@ function strict_lower($a, $b) {
 	return false;
 }
 
-/*if (strict_lower($config['version'], '1.0')) {
+if (strict_lower($config['version'], '0.2')) {
 
-	// ...
+	$albums = Text::unhash(get_file(FILE_ALBUMS));
+	foreach ($albums as $k => $a) {
+		foreach ($a['files'] as $l => $f) {
+			$albums[$k]['files'][$l]['thumbnail'] = false;
+		}
+	}
+	update_file(FILE_ALBUMS, Text::hash($albums));
 
-}*/
+}
 
 $settings = new Settings();
 if ($config['url_rewriting']) { $settings->url_rewriting(); }

@@ -34,6 +34,19 @@
 		&& file_exists($album['files'][$_GET['filename']]['path'])
 	) {
 
+		if (isset($_GET['thumbnail'])
+			&& $album['files'][$_GET['filename']]['thumbnail'] !== false
+			&& file_exists($album['files'][$_GET['filename']]['thumbnail'])
+		) {
+
+			$file = $album['files'][$_GET['filename']];
+			header('Content-Type: '.Text::get_mime_type($file['filename']));
+			header('Content-Length: '.filesize($file['thumbnail']));
+			readfile_chunked($file['thumbnail']);
+			exit;
+
+		}
+
 		$file = $album['files'][$_GET['filename']];
 		header('Content-Type: '.Text::get_mime_type($file['filename']));
 		header('Content-Length: '.filesize($file['path']));
