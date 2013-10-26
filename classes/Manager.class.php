@@ -198,8 +198,8 @@ class Manager {
 	}
 
 	protected function thumbnailImg($filename, $dirname) {
-		$maxWidth = 200;
-		$maxHeight = 200;
+		$maxWidth = 160;
+		$maxHeight = 160;
 		$path = DIR_DATABASE.FOL_FILES.$dirname.'/'.$filename;
 		$pathNew = DIR_DATABASE.FOL_FILES.$dirname.'/'.FOL_THUMBNAILS.$filename;
 		if (file_exists($pathNew)) { return $pathNew; }
@@ -211,7 +211,7 @@ class Manager {
 			$img = imagecreatefromgif($path);
 		}
 		elseif ($ext == 'png') {
-			$img == imagecreatefrompng($path);
+			$img = imagecreatefrompng($path);
 		}
 		else {
 			return false;
@@ -249,8 +249,7 @@ class Manager {
 		$video = DIR_DATABASE.FOL_FILES.$dirname.'/'.$filename;
 		$image = DIR_DATABASE.FOL_FILES.$dirname.'/'.FOL_THUMBNAILS.$filename.'.jpg';
 		$command = "$ffmpeg  -itsoffset -$second  -i $video -vcodec mjpeg -vframes 1 -an -f rawvideo -s 150×84 $image";
-		echo exec($command);
-		echo $ffmpeg;
+		exec($command);
 		if (file_exists($image)) {
 			return DIR_DATABASE.FOL_FILES.$dirname.'/'.FOL_THUMBNAILS.$filename;
 		}*/

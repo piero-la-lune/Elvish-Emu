@@ -158,7 +158,8 @@ class Text {
 	}
 
 	public static function get_mime_type($filename) {
-		switch (self::get_ext($filename)) {
+		$ext = self::get_ext($filename);
+		switch ($ext) {
 			case 'jpg':
 				return 'image/jpeg';
 			case 'jpeg':

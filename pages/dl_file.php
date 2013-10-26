@@ -48,8 +48,9 @@
 		}
 
 		$file = $album['files'][$_GET['filename']];
+		$size = trim(shell_exec('stat -c%s '.$file['path']));
 		header('Content-Type: '.Text::get_mime_type($file['filename']));
-		header('Content-Length: '.filesize($file['path']));
+		header('Content-Length: '.$size);
 		readfile_chunked($file['path']);
 		exit;
 
