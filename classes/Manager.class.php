@@ -228,6 +228,8 @@ class Manager {
 			$height = $maxHeight;
 		}
 		$newImg = imagecreatetruecolor($width, $height);
+		imagealphablending($newImg, false);
+		imagesavealpha($newImg, true);
 		imagecopyresampled($newImg, $img, 0, 0, 0, 0,
 			$width, $height, imageSX($img), imageSY($img));
 		check_dir(FOL_FILES.$dirname.'/'.FOL_THUMBNAILS);

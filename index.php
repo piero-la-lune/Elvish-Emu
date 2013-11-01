@@ -268,6 +268,7 @@ check_dir(FOL_FILES);
 check_file(FILE_ALBUMS, Text::hash(array()));
 check_file(FILE_TAGS, Text::hash(array()));
 check_file('.htaccess', "Allow from none\nDeny from all\n");
+check_file(FOL_FILES.'.htaccess', "Options -Indexes\n\nAllow from all\nDeny from none\n");
 
 ### Cron jobs
 if (isset($cron_job) && $cron_job == true) {

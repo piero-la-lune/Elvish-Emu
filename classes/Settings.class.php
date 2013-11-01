@@ -135,7 +135,8 @@ class Settings {
 	public function url_rewriting() {
 		if ($rewriting = Url::getRules()) {
 			$base = $this->config['url_rewriting'];
-			$text = 'ErrorDocument 404 '.$base.'error/404'."\n\n"
+			$text = 'ErrorDocument 403 '.$base.'error/403'."\n"
+				.'ErrorDocument 404 '.$base.'error/404'."\n\n"
 				.'RewriteEngine on'."\n"
 				.'RewriteBase '.$base."\n\n";
 			foreach ($rewriting as $r) {

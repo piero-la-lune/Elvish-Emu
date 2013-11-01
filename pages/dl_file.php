@@ -34,25 +34,35 @@
 		&& file_exists($album['files'][$_GET['filename']]['path'])
 	) {
 
+		# On n'affiche pas le contenu, car pour les gros fichiers, le temps
+		# limite d'exécution de PHP est atteint : il faut rediriger
+		# directement vers le lien réel du fichier
+
 		if (isset($_GET['thumbnail'])
 			&& $album['files'][$_GET['filename']]['thumbnail'] !== false
 			&& file_exists($album['files'][$_GET['filename']]['thumbnail'])
 		) {
 
-			$file = $album['files'][$_GET['filename']];
+			header('Location: '.Url::parse('database/files/'.$album['dir'].'/thumbnails/'.$_GET['filename']));
+			exit;
+
+/*			$file = $album['files'][$_GET['filename']];
 			header('Content-Type: '.Text::get_mime_type($file['filename']));
 			header('Content-Length: '.filesize($file['thumbnail']));
 			readfile_chunked($file['thumbnail']);
-			exit;
+			exit;*/
 
 		}
 
-		$file = $album['files'][$_GET['filename']];
+		header('Location: '.Url::parse('database/files/'.$album['dir'].'/'.$_GET['filename']));
+		exit;
+
+/*		$file = $album['files'][$_GET['filename']];
 		$size = trim(shell_exec('stat -c%s '.$file['path']));
 		header('Content-Type: '.Text::get_mime_type($file['filename']));
 		header('Content-Length: '.$size);
 		readfile_chunked($file['path']);
-		exit;
+		exit;*/
 
 	}
 	else {
